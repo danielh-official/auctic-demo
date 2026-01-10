@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('owner_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('banned_user_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
+
+            $table->unique(['owner_id', 'banned_user_id']); // Ensure a user cannot be banned multiple times by the same owner
         });
     }
 
