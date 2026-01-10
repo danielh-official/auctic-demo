@@ -1,3 +1,36 @@
+# Auction Ops Simulator Project
+
+## Project Overview
+
+This project is building an **Auction Ops Simulator**—a backend-focused Laravel application that models the operational backend of a live auction. The project demonstrates:
+
+- Deep Laravel architecture and domain modeling
+- Auction business domain expertise (aligning with Auctic's mission)
+- Scalability thinking for bidding, concurrency, and time-boxed events
+- Clean architecture with services, aggregates, and domain events
+- Operations mindset (settlement, reconciliation, failure handling)
+- Pragmatic backend design over UI flash
+
+## Core Features Being Implemented
+
+1. **Auction Lifecycle API**: Draft → Scheduled → Live → Closing → Closed → Settled
+2. **Bidding Engine**: Bid placement, minimum increments, soft close logic with concurrency safety
+3. **Post-Auction Settlement**: Winning bidder determination, buyer's premium, taxes/fees, settlement reports
+4. **Minimal Admin UI**: Clean Inertia + Vue dashboard for auction management and settlement review
+
+## Architectural Focus
+
+- State pattern for auction lifecycle transitions
+- Database transactions and row locking for concurrency safety
+- Idempotency for duplicate bid requests
+- Domain events (e.g., `AuctionClosed`, `BidPlaced`)
+- Repository pattern with Eloquent
+- Comprehensive feature and unit tests (TDD approach)
+- GitHub Actions CI/CD pipeline
+- Docker-based local development
+
+---
+
 <laravel-boost-guidelines>
 === foundation rules ===
 
