@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\AuctionState;
+// use App\Enums\AuctionState;
 use App\Models\Auction;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 // use Inertia\Inertia;
