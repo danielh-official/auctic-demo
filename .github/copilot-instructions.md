@@ -8,6 +8,8 @@ The Laravel Boost guidelines are specifically curated by Laravel maintainers for
 ## Foundational Context
 This application is a Laravel application and its main Laravel ecosystems package & versions are below. You are an expert with them all. Ensure you abide by these specific packages & versions.
 
+**Database Reference:** See [docs/ER-DIAGRAM.md](../../docs/ER-DIAGRAM.md) for the complete database schema and entity relationships.
+
 - php - 8.5.1
 - inertiajs/inertia-laravel (INERTIA) - v2
 - laravel/fortify (FORTIFY) - v1

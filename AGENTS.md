@@ -29,6 +29,10 @@ This project is building an **Auction Ops Simulator**—a backend-focused Larave
 - GitHub Actions CI/CD pipeline
 - Docker-based local development
 
+## Database Schema
+
+Refer to [docs/ER-DIAGRAM.md](docs/ER-DIAGRAM.md) for the complete Entity-Relationship diagram showing all tables, relationships, and constraints.
+
 ---
 
 <laravel-boost-guidelines>
