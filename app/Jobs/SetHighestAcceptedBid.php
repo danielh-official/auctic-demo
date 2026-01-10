@@ -9,7 +9,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\SerializesModels;
 
-class SetHighestAcceptedBid implements ShouldQueue, ShouldBeUnique
+class SetHighestAcceptedBid implements ShouldBeUnique, ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -18,8 +18,7 @@ class SetHighestAcceptedBid implements ShouldQueue, ShouldBeUnique
      */
     public function __construct(
         protected Lot $lot
-    )
-    {}
+    ) {}
 
     /**
      * Execute the job.
@@ -27,7 +26,7 @@ class SetHighestAcceptedBid implements ShouldQueue, ShouldBeUnique
     public function handle(): void
     {
         // Get highest bid for the lot
-        $highestBid = $this->lot->bids()->where('status', '<>',BidStatus::Rejected)->orderBy('amount_cents', 'desc')->first();
+        $highestBid = $this->lot->bids()->where('status', '<>', BidStatus::Rejected)->orderBy('amount_cents', 'desc')->first();
 
         // Get all previous bids and make sure their status is set to Outbid
         $this->lot->bids()

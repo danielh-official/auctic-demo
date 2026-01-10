@@ -18,12 +18,12 @@ class Pay extends Controller
         $paymentMethod = $validatedData['payment_method'];
 
         // Check if the auction is active and has a winning bid
-        if (!$auction->is_active) {
+        if (! $auction->is_active) {
             return response()->json(['message' => 'Auction is not active.'], 400);
         }
 
         $winningBid = $auction->bids()->orderBy('amount', 'desc')->first();
-        if (!$winningBid) {
+        if (! $winningBid) {
             return response()->json(['message' => 'No winning bid found for this auction.'], 400);
         }
 

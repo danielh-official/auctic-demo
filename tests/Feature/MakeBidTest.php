@@ -7,8 +7,8 @@ use App\Models\Auction;
 use App\Models\Bid;
 use App\Models\Lot;
 use App\Models\User;
-
 use Illuminate\Support\Facades\Queue;
+
 use function Pest\Laravel\actingAs;
 
 beforeEach(function () {
@@ -202,7 +202,7 @@ it('allows multiple sequential bids from different users', function () {
         ]);
 
     expect($lot->bids()->count())->toBe(3);
-    
+
     $lot->refresh();
     $latestBid = $lot->bids()->orderBy('id', 'desc')->first();
     expect($latestBid->user_id)->toBe($user3->id);

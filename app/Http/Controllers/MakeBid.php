@@ -20,13 +20,13 @@ class MakeBid extends Controller
         $amount = $validatedData['amount_cents'];
 
         // Check if the auction is active
-        if (!$lot->auction->is_active) {
+        if (! $lot->auction->is_active) {
             return back()->with('error', 'This auction is not active. You cannot place a bid at this time.');
         }
 
         // Check if the bid amount is higher than the current highest bid
         $currentHighestBid = $lot->bids()->orderBy('amount_cents', 'desc')->first();
-    
+
         if ($currentHighestBid && $amount <= $currentHighestBid->amount_cents) {
             return back()->with('error', 'Bid amount must be higher than the current highest bid.');
         }

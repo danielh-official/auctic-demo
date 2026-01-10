@@ -10,7 +10,8 @@ use Illuminate\Http\Request;
 
 class JoinAuction extends Controller
 {
-    public function __invoke(Request $request, Auction $auction) {
+    public function __invoke(Request $request, Auction $auction)
+    {
         // An auction owner cannot join their own auction as a participant
         if ($request->user()->id === $auction->owner_id) {
             return to_route('auctions.show', $auction)

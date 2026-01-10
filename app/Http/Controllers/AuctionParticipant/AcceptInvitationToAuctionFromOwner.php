@@ -5,7 +5,6 @@ namespace App\Http\Controllers\AuctionParticipant;
 use App\Http\Controllers\Controller;
 use App\Models\Auction;
 use App\Models\AuctionParticipant;
-use Illuminate\Http\Request;
 
 /**
  * A user accepts an invitation from an auction owner to join the auction

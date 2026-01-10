@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers\AuctionParticipant;
 
-use App\Http\Controllers\Controller;
 use App\Enums\ParticipantStatus;
+use App\Http\Controllers\Controller;
 use App\Models\Auction;
 use App\Models\AuctionParticipant;
 use Illuminate\Support\Facades\Request;

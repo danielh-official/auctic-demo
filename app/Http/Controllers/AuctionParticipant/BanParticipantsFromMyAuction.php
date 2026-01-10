@@ -8,7 +8,8 @@ use Illuminate\Http\Request;
 
 class BanParticipantsFromMyAuction extends Controller
 {
-    public function __invoke(Request $request, Auction $auction) {
+    public function __invoke(Request $request, Auction $auction)
+    {
         // Accept user_ids as an array from the request
         // Parse user_ids array and get all values that coincides with existing users in the table
         // If there are no valid user_ids, return a 403 Forbidden response
