@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AuctionController;
 use App\Http\Controllers\MyAuctionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -15,6 +16,10 @@ Route::get('dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+// Public auction browsing (accessible to all users)
+Route::resource('auctions', AuctionController::class)->only(['index', 'show']);
+
+// Authenticated user's own auctions
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::prefix('my')->name('my.')->group(function () {
         Route::resource('auctions', MyAuctionController::class);
