@@ -6,10 +6,10 @@ use App\Http\Controllers\AuctionParticipant\BanParticipantsFromAllMyAuctions;
 use App\Http\Controllers\AuctionParticipant\BanParticipantsFromMyAuction;
 use App\Http\Controllers\AuctionParticipant\InviteParticipantsToMyAuction;
 use App\Http\Controllers\AuctionParticipant\JoinAuction;
-use App\Http\Controllers\MakeBid;
 use App\Http\Controllers\MyAuctionController;
 use App\Http\Controllers\MyAuctionLotController;
 use App\Http\Controllers\Pay;
+use App\Http\Controllers\PlaceBid;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -39,7 +39,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         });
 
         Route::prefix('lots/{lot}')->group(function () {
-            Route::post('bid', MakeBid::class)->name('lots.bid');
+            Route::post('bid', PlaceBid::class)->name('lots.bid');
         });
     });
 

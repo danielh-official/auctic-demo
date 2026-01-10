@@ -8,7 +8,7 @@ use App\Jobs\SetHighestAcceptedBid;
 use App\Models\Lot;
 use Illuminate\Http\Request;
 
-class MakeBid extends Controller
+class PlaceBid extends Controller
 {
     public function __invoke(Request $request, Lot $lot)
     {
