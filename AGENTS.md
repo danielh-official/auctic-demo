@@ -33,6 +33,10 @@ This project is building an **Auction Ops Simulator**—a backend-focused Larave
 
 Refer to [docs/ER-DIAGRAM.md](docs/ER-DIAGRAM.md) for the complete Entity-Relationship diagram showing all tables, relationships, and constraints.
 
+## Routes Reference
+
+See [docs/ROUTES.md](/docs/ROUTES.md) for an in-progress list of intended application routes, their purposes, and access controls.
+
 ---
 
 <laravel-boost-guidelines>
