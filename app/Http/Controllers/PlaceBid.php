@@ -7,6 +7,7 @@ use App\Enums\BidStatus;
 use App\Jobs\SetHighestAcceptedBid;
 use App\Models\Lot;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class PlaceBid extends Controller
 {
@@ -24,28 +25,33 @@ class PlaceBid extends Controller
             return back()->with('error', 'This auction is not active. You cannot place a bid at this time.');
         }
 
-        // Check if the bid amount is higher than the current highest bid
-        $currentHighestBid = $lot->bids()->orderBy('amount_cents', 'desc')->first();
+        return DB::transaction(function () use ($lot, $amount) {
+            // Lock the bids table for this lot to prevent race conditions
+            $currentHighestBid = $lot->bids()
+                ->lockForUpdate()
+                ->orderBy('amount_cents', 'desc')
+                ->first();
 
-        if ($currentHighestBid && $amount <= $currentHighestBid->amount_cents) {
-            return back()->with('error', 'Bid amount must be higher than the current highest bid.');
-        }
+            if ($currentHighestBid && $amount <= $currentHighestBid->amount_cents) {
+                return back()->with('error', 'Bid amount must be higher than the current highest bid.');
+            }
 
-        // A user cannot place a bid if they are currently the highest bidder
-        if ($currentHighestBid && $currentHighestBid->user_id === auth()->id()) {
-            return back()->with('error', 'You are already the highest bidder. You cannot place another bid on this lot at this time.');
-        }
+            // A user cannot place a bid if they are currently the highest bidder
+            if ($currentHighestBid && $currentHighestBid->user_id === auth()->id()) {
+                return back()->with('error', 'You are already the highest bidder. You cannot place another bid on this lot at this time.');
+            }
 
-        // Create a new bid
-        $lot->bids()->create([
-            'user_id' => auth()->id(),
-            'amount_cents' => $amount,
-            'status' => BidStatus::Accepted,
-        ]);
+            // Create a new bid
+            $lot->bids()->create([
+                'user_id' => auth()->id(),
+                'amount_cents' => $amount,
+                'status' => BidStatus::Accepted,
+            ]);
 
-        // Dispatch job to set previous highest bid to Outbid
-        SetHighestAcceptedBid::dispatch($lot);
+            // Dispatch job to set previous highest bid to Outbid
+            SetHighestAcceptedBid::dispatch($lot);
 
-        return back()->with('success', "Your bid for $amount has been placed successfully!");
+            return back()->with('success', "Your bid for $amount has been placed successfully!");
+        });
     }
 }

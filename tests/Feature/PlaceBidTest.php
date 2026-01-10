@@ -254,3 +254,74 @@ it('prevents user from bidding if they are already the highest bidder', function
 
     expect($lot->bids()->count())->toBe(1);
 });
+
+it('prevents race conditions when two users bid simultaneously', function () {
+    $auction = Auction::factory()->create([
+        'state' => AuctionState::Live,
+        'live_at' => now()->subHour(),
+        'live_ends_at' => now()->addHour(),
+    ]);
+    $lot = Lot::factory()->create(['auction_id' => $auction->id]);
+    
+    // Create initial bid
+    Bid::factory()->create([
+        'lot_id' => $lot->id,
+        'user_id' => $this->user->id,
+        'amount_cents' => 10000, // $100.00
+        'status' => BidStatus::Accepted,
+    ]);
+
+    $user2 = User::factory()->create(['email_verified_at' => now()]);
+    $user3 = User::factory()->create(['email_verified_at' => now()]);
+
+    // Simulate concurrent bids by using database transactions
+    // Both users try to bid 15000 at the "same time" (reading the same highest bid of 10000)
+    $exceptions = [];
+    $successCount = 0;
+
+    try {
+        DB::beginTransaction();
+        
+        // User 2 places bid
+        actingAs($user2)
+            ->post(route('auctions.lots.bid', $lot), [
+                'amount_cents' => 15000,
+            ]);
+        
+        $successCount++;
+        DB::commit();
+    } catch (\Exception $e) {
+        DB::rollBack();
+        $exceptions[] = $e;
+    }
+
+    try {
+        DB::beginTransaction();
+        
+        // User 3 tries to place same bid amount
+        actingAs($user3)
+            ->post(route('auctions.lots.bid', $lot), [
+                'amount_cents' => 15000,
+            ]);
+        
+        $successCount++;
+        DB::commit();
+    } catch (\Exception $e) {
+        DB::rollBack();
+        $exceptions[] = $e;
+    }
+
+    // Refresh and verify only valid bids were created
+    $lot->refresh();
+    $bids = $lot->bids()->orderBy('amount_cents', 'asc')->get();
+    
+    // We should have exactly 2 bids: the initial 10000 and one 15000
+    // The second 15000 should have been rejected
+    expect($bids->count())->toBe(2);
+    expect($bids->pluck('amount_cents')->toArray())->toBe([10000, 15000]);
+    
+    // The highest bid should be 15000
+    $highestBid = $lot->bids()->orderBy('amount_cents', 'desc')->first();
+    expect($highestBid->amount_cents)->toBe(15000);
+    expect($highestBid->user_id)->toBeIn([$user2->id, $user3->id]);
+});
