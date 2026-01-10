@@ -6,4 +6,5 @@ enum BidStatus: string
 {
     case Accepted = 'accepted';
     case Outbid = 'outbid';
+    case Rejected = 'rejected';
 }
