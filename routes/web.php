@@ -35,9 +35,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
             Route::patch('accept-invitation', AcceptInvitationToAuctionFromOwner::class)->name('accept-invitation');
 
-            Route::post('bid', MakeBid::class)->name('bid');
-
             Route::post('pay', Pay::class)->name('pay');
+        });
+
+        Route::prefix('lots/{lot}')->group(function () {
+            Route::post('bid', MakeBid::class)->name('lots.bid');
         });
     });
 

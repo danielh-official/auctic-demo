@@ -74,7 +74,7 @@ An authenticated user can ban another user from joining any auction they own
 
 An authenticated user can bid on auction if accepted participant
 
-- POST invoke: /auctions/{auction}/bid
+- POST invoke: /lots/{lot}/bid
 
 ## Pay for final amount on auction lot
 

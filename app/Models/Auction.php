@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AuctionState;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -55,5 +56,12 @@ class Auction extends Model
     public function owner(): BelongsTo
     {
         return $this->belongsTo(User::class, 'owner_id');
+    }
+
+    public function isActive(): Attribute
+    {
+        return Attribute::make(
+            get: fn (): bool => $this->state === AuctionState::Live && $this->live_at && now() < $this->live_ends_at,
+        );
     }
 }
