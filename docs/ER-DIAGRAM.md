@@ -1,6 +1,10 @@
 # Database ER Diagram
 
-This document contains the Entity-Relationship diagram for the Auction Ops Simulator database schema.
+Last Updated: January 10, 2025
+
+This document is intended to highlight the entity relationship plan the backend engineer intends to build for the web app.
+
+Information can be outdated. Be sure to check the above Last Updated date as well as the Git Revision history. For any questions, contact the backend developer @ {insert contact information here}.
 
 ## Entity Relationship Diagram
 
