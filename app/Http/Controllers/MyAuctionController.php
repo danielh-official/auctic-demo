@@ -8,10 +8,13 @@ use App\Http\Requests\UpdateAuctionRequest;
 use App\Models\Auction;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\RedirectResponse;
-use Inertia\Inertia;
+// use Inertia\Inertia;
 use Inertia\Response;
 
-class AuctionController extends Controller
+/**
+ * Controller for an auction that I own, as opposed to the public-facing AuctionController.
+ */
+class MyAuctionController extends Controller
 {
     use AuthorizesRequests;
 
@@ -60,7 +63,7 @@ class AuctionController extends Controller
             'state' => $request->input('state', AuctionState::Draft),
         ]);
 
-        return to_route('auctions.show', $auction)
+        return to_route('my.auctions.show', $auction)
             ->with('success', 'Auction created successfully.');
     }
 
@@ -103,7 +106,7 @@ class AuctionController extends Controller
     {
         $auction->update($request->validated());
 
-        return to_route('auctions.show', $auction)
+        return to_route('my.auctions.show', $auction)
             ->with('success', 'Auction updated successfully.');
     }
 
@@ -116,7 +119,7 @@ class AuctionController extends Controller
 
         $auction->delete();
 
-        return to_route('auctions.index')
+        return to_route('my.auctions.index')
             ->with('success', 'Auction deleted successfully.');
     }
 }

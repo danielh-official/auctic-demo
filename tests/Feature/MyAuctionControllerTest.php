@@ -13,13 +13,13 @@ test('authenticated user can view their auctions list', function () {
     $user = User::factory()->create();
     $auction = Auction::factory()->for($user, 'owner')->create();
 
-    $response = actingAs($user)->get(route('auctions.index'));
+    $response = actingAs($user)->get(route('my.auctions.index'));
 
     $response->assertOk();
 });
 
 test('guest cannot view auctions index', function () {
-    $response = $this->get(route('auctions.index'));
+    $response = $this->get(route('my.auctions.index'));
 
     $response->assertRedirect(route('login'));
 });
@@ -33,7 +33,7 @@ test('user only sees their own auctions in index', function () {
     $userAuction = Auction::factory()->for($user, 'owner')->create(['title' => 'User Auction']);
     $otherAuction = Auction::factory()->for($otherUser, 'owner')->create(['title' => 'Other Auction']);
 
-    $response = actingAs($user)->get(route('auctions.index'));
+    $response = actingAs($user)->get(route('my.auctions.index'));
 
     $response->assertOk();
 });
@@ -44,13 +44,13 @@ test('authenticated user can view create form', function () {
 
     $user = User::factory()->create();
 
-    $response = actingAs($user)->get(route('auctions.create'));
+    $response = actingAs($user)->get(route('my.auctions.create'));
 
     $response->assertOk();
 });
 
 test('guest cannot view create form', function () {
-    $response = $this->get(route('auctions.create'));
+    $response = $this->get(route('my.auctions.create'));
 
     $response->assertRedirect(route('login'));
 });
@@ -65,7 +65,7 @@ test('authenticated user can create auction', function () {
         'scheduled_at' => now()->addDays(7)->toDateTimeString(),
     ];
 
-    $response = actingAs($user)->post(route('auctions.store'), $auctionData);
+    $response = actingAs($user)->post(route('my.auctions.store'), $auctionData);
 
     $response->assertRedirect();
     $this->assertDatabaseHas('auctions', [
@@ -78,7 +78,7 @@ test('authenticated user can create auction', function () {
 test('auction creation requires title', function () {
     $user = User::factory()->create();
 
-    $response = actingAs($user)->post(route('auctions.store'), [
+    $response = actingAs($user)->post(route('my.auctions.store'), [
         'description' => 'Test Description',
     ]);
 
@@ -88,7 +88,7 @@ test('auction creation requires title', function () {
 test('auction title cannot exceed 255 characters', function () {
     $user = User::factory()->create();
 
-    $response = actingAs($user)->post(route('auctions.store'), [
+    $response = actingAs($user)->post(route('my.auctions.store'), [
         'title' => str_repeat('a', 256),
         'description' => 'Test Description',
     ]);
@@ -99,7 +99,7 @@ test('auction title cannot exceed 255 characters', function () {
 test('scheduled_at must be in the future', function () {
     $user = User::factory()->create();
 
-    $response = actingAs($user)->post(route('auctions.store'), [
+    $response = actingAs($user)->post(route('my.auctions.store'), [
         'title' => 'Test Auction',
         'scheduled_at' => now()->subDay()->toDateTimeString(),
     ]);
@@ -108,7 +108,7 @@ test('scheduled_at must be in the future', function () {
 });
 
 test('guest cannot create auction', function () {
-    $response = $this->post(route('auctions.store'), [
+    $response = $this->post(route('my.auctions.store'), [
         'title' => 'Test Auction',
     ]);
 
@@ -122,7 +122,7 @@ test('owner can view their auction', function () {
     $user = User::factory()->create();
     $auction = Auction::factory()->for($user, 'owner')->create();
 
-    $response = actingAs($user)->get(route('auctions.show', $auction));
+    $response = actingAs($user)->get(route('my.auctions.show', $auction));
 
     $response->assertOk();
 });
@@ -134,7 +134,7 @@ test('non-owner cannot view another users auction', function () {
     $otherUser = User::factory()->create();
     $auction = Auction::factory()->for($owner, 'owner')->create();
 
-    $response = actingAs($otherUser)->get(route('auctions.show', $auction));
+    $response = actingAs($otherUser)->get(route('my.auctions.show', $auction));
 
     $response->assertForbidden();
 });
@@ -146,7 +146,7 @@ test('admin can view any auction', function () {
     $owner = User::factory()->create();
     $auction = Auction::factory()->for($owner, 'owner')->create();
 
-    $response = actingAs($admin)->get(route('auctions.show', $auction));
+    $response = actingAs($admin)->get(route('my.auctions.show', $auction));
 
     $response->assertOk();
 });
@@ -154,7 +154,7 @@ test('admin can view any auction', function () {
 test('guest cannot view auction', function () {
     $auction = Auction::factory()->create();
 
-    $response = $this->get(route('auctions.show', $auction));
+    $response = $this->get(route('my.auctions.show', $auction));
 
     $response->assertRedirect(route('login'));
 });
@@ -166,7 +166,7 @@ test('owner can view edit form for their auction', function () {
     $user = User::factory()->create();
     $auction = Auction::factory()->for($user, 'owner')->create();
 
-    $response = actingAs($user)->get(route('auctions.edit', $auction));
+    $response = actingAs($user)->get(route('my.auctions.edit', $auction));
 
     $response->assertOk();
 });
@@ -178,7 +178,7 @@ test('non-owner cannot view edit form for another users auction', function () {
     $otherUser = User::factory()->create();
     $auction = Auction::factory()->for($owner, 'owner')->create();
 
-    $response = actingAs($otherUser)->get(route('auctions.edit', $auction));
+    $response = actingAs($otherUser)->get(route('my.auctions.edit', $auction));
 
     $response->assertForbidden();
 });
@@ -186,7 +186,7 @@ test('non-owner cannot view edit form for another users auction', function () {
 test('guest cannot view edit form', function () {
     $auction = Auction::factory()->create();
 
-    $response = $this->get(route('auctions.edit', $auction));
+    $response = $this->get(route('my.auctions.edit', $auction));
 
     $response->assertRedirect(route('login'));
 });
@@ -198,12 +198,12 @@ test('owner can update their auction', function () {
         'title' => 'Original Title',
     ]);
 
-    $response = actingAs($user)->put(route('auctions.update', $auction), [
+    $response = actingAs($user)->put(route('my.auctions.update', $auction), [
         'title' => 'Updated Title',
         'description' => 'Updated Description',
     ]);
 
-    $response->assertRedirect(route('auctions.show', $auction));
+    $response->assertRedirect(route('my.auctions.show', $auction));
     $this->assertDatabaseHas('auctions', [
         'id' => $auction->id,
         'title' => 'Updated Title',
@@ -218,7 +218,7 @@ test('non-owner cannot update another users auction', function () {
         'title' => 'Original Title',
     ]);
 
-    $response = actingAs($otherUser)->put(route('auctions.update', $auction), [
+    $response = actingAs($otherUser)->put(route('my.auctions.update', $auction), [
         'title' => 'Updated Title',
     ]);
 
@@ -236,11 +236,11 @@ test('admin can update any auction', function () {
         'title' => 'Original Title',
     ]);
 
-    $response = actingAs($admin)->put(route('auctions.update', $auction), [
+    $response = actingAs($admin)->put(route('my.auctions.update', $auction), [
         'title' => 'Admin Updated Title',
     ]);
 
-    $response->assertRedirect(route('auctions.show', $auction));
+    $response->assertRedirect(route('my.auctions.show', $auction));
     $this->assertDatabaseHas('auctions', [
         'id' => $auction->id,
         'title' => 'Admin Updated Title',
@@ -250,7 +250,7 @@ test('admin can update any auction', function () {
 test('guest cannot update auction', function () {
     $auction = Auction::factory()->create();
 
-    $response = $this->put(route('auctions.update', $auction), [
+    $response = $this->put(route('my.auctions.update', $auction), [
         'title' => 'Updated Title',
     ]);
 
@@ -262,9 +262,9 @@ test('owner can delete their auction', function () {
     $user = User::factory()->create();
     $auction = Auction::factory()->for($user, 'owner')->create();
 
-    $response = actingAs($user)->delete(route('auctions.destroy', $auction));
+    $response = actingAs($user)->delete(route('my.auctions.destroy', $auction));
 
-    $response->assertRedirect(route('auctions.index'));
+    $response->assertRedirect(route('my.auctions.index'));
     $this->assertSoftDeleted('auctions', [
         'id' => $auction->id,
     ]);
@@ -275,7 +275,7 @@ test('non-owner cannot delete another users auction', function () {
     $otherUser = User::factory()->create();
     $auction = Auction::factory()->for($owner, 'owner')->create();
 
-    $response = actingAs($otherUser)->delete(route('auctions.destroy', $auction));
+    $response = actingAs($otherUser)->delete(route('my.auctions.destroy', $auction));
 
     $response->assertForbidden();
     $this->assertDatabaseHas('auctions', [
@@ -289,9 +289,9 @@ test('admin can delete any auction', function () {
     $owner = User::factory()->create();
     $auction = Auction::factory()->for($owner, 'owner')->create();
 
-    $response = actingAs($admin)->delete(route('auctions.destroy', $auction));
+    $response = actingAs($admin)->delete(route('my.auctions.destroy', $auction));
 
-    $response->assertRedirect(route('auctions.index'));
+    $response->assertRedirect(route('my.auctions.index'));
     $this->assertSoftDeleted('auctions', [
         'id' => $auction->id,
     ]);
@@ -300,7 +300,7 @@ test('admin can delete any auction', function () {
 test('guest cannot delete auction', function () {
     $auction = Auction::factory()->create();
 
-    $response = $this->delete(route('auctions.destroy', $auction));
+    $response = $this->delete(route('my.auctions.destroy', $auction));
 
     $response->assertRedirect(route('login'));
 });

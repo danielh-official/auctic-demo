@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\AuctionController;
+use App\Http\Controllers\MyAuctionController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -16,7 +16,9 @@ Route::get('dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::resource('auctions', AuctionController::class);
+    Route::prefix('my')->name('my.')->group(function () {
+        Route::resource('auctions', MyAuctionController::class);
+    });
 });
 
 require __DIR__.'/settings.php';
