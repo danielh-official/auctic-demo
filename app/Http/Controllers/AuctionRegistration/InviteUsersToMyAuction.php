@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\AuctionParticipant;
+namespace App\Http\Controllers\AuctionRegistration;
 
-use App\Enums\ParticipantStatus;
+use App\Enums\RegistrationStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Auction;
-use App\Models\AuctionParticipant;
+use App\Models\AuctionRegistration;
 use Illuminate\Support\Facades\Request;
 
-class InviteParticipantsToMyAuction extends Controller
+class InviteUsersToMyAuction extends Controller
 {
     public function __invoke(Request $request, Auction $auction)
     {
@@ -17,7 +17,7 @@ class InviteParticipantsToMyAuction extends Controller
         ]);
 
         // Cannot invite already registered or invited users
-        if (AuctionParticipant::query()
+        if (AuctionRegistration::query()
             ->where('auction_id', $auction->id)
             ->where('user_id', $request->input('user_id'))
             ->exists()) {
@@ -31,17 +31,17 @@ class InviteParticipantsToMyAuction extends Controller
                 ->with('error', 'You cannot invite yourself to your own auction.');
         }
 
-        $participant = AuctionParticipant::firstOrCreate(
+        $registration = AuctionRegistration::firstOrCreate(
             [
                 'auction_id' => $auction->id,
                 'user_id' => $request->input('user_id'),
             ],
             [
-                'status' => ParticipantStatus::Invited,
+                'status' => RegistrationStatus::Invited,
             ]
         );
 
         return to_route('auctions.show', $auction)
-            ->with('success', "You have successfully invited a participant: {$participant->user->name}.");
+            ->with('success', "You have successfully invited a user: {$registration->user->name}.");
     }
 }

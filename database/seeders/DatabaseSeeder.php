@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Auction;
-use App\Models\AuctionParticipant;
+use App\Models\AuctionRegistration;
 use App\Models\Lot;
 use App\Models\PaymentIntent;
 use App\Models\Settlement;
@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
         $lots = Lot::factory()->count(3)->open()->for($auction)->create();
 
         foreach ($lots as $lot) {
-            AuctionParticipant::factory()->for($auction)->for($admin)->create();
+            AuctionRegistration::factory()->for($auction)->for($admin)->create();
 
             $settlement = Settlement::factory()->for($lot)->create();
 

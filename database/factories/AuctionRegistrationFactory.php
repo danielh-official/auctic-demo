@@ -2,15 +2,15 @@
 
 namespace Database\Factories;
 
-use App\Enums\ParticipantStatus;
+use App\Enums\RegistrationStatus;
 use App\Models\Auction;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AuctionParticipant>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AuctionRegistration>
  */
-class AuctionParticipantFactory extends Factory
+class AuctionRegistrationFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -22,21 +22,21 @@ class AuctionParticipantFactory extends Factory
         return [
             'auction_id' => Auction::factory(),
             'user_id' => User::factory(),
-            'status' => ParticipantStatus::Approved,
+            'status' => RegistrationStatus::Approved,
         ];
     }
 
     public function invited(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => ParticipantStatus::Invited,
+            'status' => RegistrationStatus::Invited,
         ]);
     }
 
     public function banned(): static
     {
         return $this->state(fn (array $attributes) => [
-            'status' => ParticipantStatus::Banned,
+            'status' => RegistrationStatus::Banned,
         ]);
     }
 }

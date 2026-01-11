@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\AuctionParticipant;
+namespace App\Http\Controllers\AuctionRegistration;
 
 use App\Http\Controllers\Controller;
 use App\Models\Auction;
 use Illuminate\Http\Request;
 
-class BanParticipantsFromMyAuction extends Controller
+class BanUsersFromMyAuction extends Controller
 {
     public function __invoke(Request $request, Auction $auction)
     {

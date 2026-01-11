@@ -165,13 +165,13 @@ test('show includes lots with bids', function () {
     $response->assertOk();
 });
 
-test('show includes participant information', function () {
+test('show includes registration information', function () {
     $this->markTestIncomplete('Frontend not implemented yet');
 
     $owner = User::factory()->create();
-    $participant = User::factory()->create();
+    $registration = User::factory()->create();
     $auction = Auction::factory()->for($owner, 'owner')->create(['state' => AuctionState::Live]);
-    \App\Models\AuctionParticipant::factory()->for($auction)->for($participant, 'user')->create();
+    \App\Models\AuctionRegistration::factory()->for($auction)->for($registration, 'user')->create();
 
     $response = $this->get(route('auctions.show', $auction));
 

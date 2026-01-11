@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\AuctionParticipant;
+namespace App\Http\Controllers\AuctionRegistration;
 
-use App\Enums\ParticipantStatus;
+use App\Enums\RegistrationStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Auction;
-use App\Models\AuctionParticipant;
+use App\Models\AuctionRegistration;
 use Illuminate\Http\Request;
 
 class JoinAuction extends Controller
@@ -19,17 +19,17 @@ class JoinAuction extends Controller
         }
 
         // A user cannot join if they are banned
-        if (AuctionParticipant::query()
+        if (AuctionRegistration::query()
             ->where('auction_id', $auction->id)
             ->where('user_id', $request->user()->id)
-            ->where('status', ParticipantStatus::Banned)
+            ->where('status', RegistrationStatus::Banned)
             ->exists()) {
             return to_route('auctions.show', $auction)
                 ->with('error', 'You are banned from participating in this auction.');
         }
 
         // A user cannot join if they are already a participant
-        if (AuctionParticipant::query()
+        if (AuctionRegistration::query()
             ->where('auction_id', $auction->id)
             ->where('user_id', $request->user()->id)
             ->exists()) {
@@ -37,13 +37,13 @@ class JoinAuction extends Controller
                 ->with('error', 'You are already registered as a participant for this auction.');
         }
 
-        AuctionParticipant::firstOrCreate(
+        AuctionRegistration::firstOrCreate(
             [
                 'auction_id' => $auction->id,
                 'user_id' => $request->user()->id,
             ],
             [
-                'status' => ParticipantStatus::Approved,
+                'status' => RegistrationStatus::Approved,
             ]
         );
 

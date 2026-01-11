@@ -51,14 +51,14 @@ class Auction extends Model
 
     public function participants(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'auction_participants')
+        return $this->belongsToMany(User::class, 'auction_registrations')
             ->withPivot('status')
             ->withTimestamps();
     }
 
-    public function participations(): HasMany
+    public function registrations(): HasMany
     {
-        return $this->hasMany(AuctionParticipant::class);
+        return $this->hasMany(AuctionRegistration::class);
     }
 
     public function owner(): BelongsTo

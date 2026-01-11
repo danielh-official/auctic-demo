@@ -11,7 +11,7 @@ Information can be outdated. Be sure to check the above Last Updated date as wel
 ```mermaid
 erDiagram
     users ||--o{ bids : "places"
-    users ||--o{ auction_participants : "participates"
+    users ||--o{ auction_registrations : "registers"
     users ||--o{ auctions : "owns"
     users {
         bigint id PK
@@ -29,7 +29,7 @@ erDiagram
     }
 
     auctions ||--o{ lots : "contains"
-    auctions ||--o{ auction_participants : "has"
+    auctions ||--o{ auction_registrations : "has"
     auctions {
         bigint id PK
         bigint user_id FK
@@ -70,7 +70,7 @@ erDiagram
         timestamp updated_at
     }
 
-    auction_participants {
+    auction_registrations {
         bigint id PK
         bigint auction_id FK
         bigint user_id FK
@@ -117,7 +117,7 @@ erDiagram
 
 ### User Participation
 - **Users** place **Bids** on lots
-- **Users** participate in auctions via **Auction Participants**
+- **Users** participate in auctions via **Auction Registrations**
 - Only approved participants can bid
 
 ### Settlement & Payment
@@ -127,7 +127,7 @@ erDiagram
 
 ## Key Constraints
 
-- `auction_participants`: Unique constraint on `(auction_id, user_id)` prevents duplicate registrations
+- `auction_registrations`: Unique constraint on `(auction_id, user_id)` prevents duplicate registrations
 - `settlements`: Unique constraint on `lot_id` ensures one settlement per lot
 - All foreign keys use `cascadeOnDelete` for referential integrity
 - Composite index on `bids(lot_id, amount_cents)` for efficient bid querying
@@ -138,6 +138,6 @@ Refer to `app/Enums/` for authoritative enum values:
 - `AuctionState`: Draft, Scheduled, Live, Closing, Closed, Settled
 - `LotStatus`: Pending, Active, Sold, Unsold
 - `BidStatus`: Accepted, Rejected, Outbid
-- `ParticipantStatus`: Approved, Rejected, Suspended
+- `RegistrationStatus`: Approved, Rejected, Suspended
 - `SettlementStatus`: Pending, Completed, Failed
 - `PaymentIntentStatus`: Initiated, Authorized, Captured, Failed

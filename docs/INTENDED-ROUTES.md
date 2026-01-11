@@ -44,7 +44,7 @@ Only interact with lots for auctions I own
 
 Only owner can invite user to an auction they own
 
-- POST invoke: /my/auctions/{auction}/invite-participants
+- POST invoke: /my/auctions/{auction}/invite-users
 
 ## Join an auction
 
@@ -62,13 +62,13 @@ An authenticated user (that has recieved an invite from an auction owner), can u
 
 An authenticated user can ban another user from joining an auction
 
-- POST invoke: /my/auctions/{auction}/ban-participants
+- POST invoke: /my/auctions/{auction}/ban-users
 
 ## Ban user from joining any of my auctions
 
 An authenticated user can ban another user from joining any auction they own
 
-- POST invoke: /my/auctions/all/ban-participants
+- POST invoke: /my/auctions/all/ban-users
 
 ## Bid on auction
 

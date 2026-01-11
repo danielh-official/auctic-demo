@@ -14,7 +14,7 @@ it('successfully bans multiple users from all auctions', function () {
     $userIds = $usersToBan->pluck('id')->toArray();
 
     actingAs($this->owner)
-        ->post(route('my.auctions.all.ban-participants'), [
+        ->post(route('my.auctions.all.ban-users'), [
             'user_ids' => $userIds,
         ])
         ->assertRedirect()
@@ -30,20 +30,20 @@ it('successfully bans multiple users from all auctions', function () {
 it('requires authentication to ban users', function () {
     $userToBan = User::factory()->create(['email_verified_at' => now()]);
 
-    $this->post(route('my.auctions.all.ban-participants'), [
+    $this->post(route('my.auctions.all.ban-users'), [
         'user_ids' => [$userToBan->id],
     ])->assertRedirect(route('login'));
 });
 
 it('requires user_ids field', function () {
     actingAs($this->owner)
-        ->post(route('my.auctions.all.ban-participants'), [])
+        ->post(route('my.auctions.all.ban-users'), [])
         ->assertInvalid(['user_ids']);
 });
 
 it('requires user_ids to be an array', function () {
     actingAs($this->owner)
-        ->post(route('my.auctions.all.ban-participants'), [
+        ->post(route('my.auctions.all.ban-users'), [
             'user_ids' => 'not-an-array',
         ])
         ->assertInvalid(['user_ids']);
@@ -51,7 +51,7 @@ it('requires user_ids to be an array', function () {
 
 it('requires each user_id to be an integer', function () {
     actingAs($this->owner)
-        ->post(route('my.auctions.all.ban-participants'), [
+        ->post(route('my.auctions.all.ban-users'), [
             'user_ids' => ['not-an-integer', 123],
         ])
         ->assertInvalid(['user_ids.0']);
@@ -61,7 +61,7 @@ it('requires each user_id to exist in users table', function () {
     $validUser = User::factory()->create(['email_verified_at' => now()]);
 
     actingAs($this->owner)
-        ->post(route('my.auctions.all.ban-participants'), [
+        ->post(route('my.auctions.all.ban-users'), [
             'user_ids' => [$validUser->id, 99999], // 99999 doesn't exist
         ])
         ->assertInvalid(['user_ids.1']);
@@ -71,7 +71,7 @@ it('prevents user from banning themselves', function () {
     $otherUser = User::factory()->create(['email_verified_at' => now()]);
 
     actingAs($this->owner)
-        ->post(route('my.auctions.all.ban-participants'), [
+        ->post(route('my.auctions.all.ban-users'), [
             'user_ids' => [$otherUser->id, $this->owner->id],
         ])
         ->assertInvalid(['user_ids.1']);
@@ -81,7 +81,7 @@ it('requires user_ids to be distinct', function () {
     $userToBan = User::factory()->create(['email_verified_at' => now()]);
 
     actingAs($this->owner)
-        ->post(route('my.auctions.all.ban-participants'), [
+        ->post(route('my.auctions.all.ban-users'), [
             'user_ids' => [$userToBan->id, $userToBan->id], // Duplicate
         ])
         ->assertInvalid(['user_ids.1']);
@@ -103,7 +103,7 @@ it('updates existing ban records instead of creating duplicates', function () {
 
     // Ban the same user again
     actingAs($this->owner)
-        ->post(route('my.auctions.all.ban-participants'), [
+        ->post(route('my.auctions.all.ban-users'), [
             'user_ids' => [$userToBan->id],
         ])
         ->assertRedirect()
@@ -123,7 +123,7 @@ it('only creates bans for the authenticated owner', function () {
     $userToBan = User::factory()->create(['email_verified_at' => now()]);
 
     actingAs($this->owner)
-        ->post(route('my.auctions.all.ban-participants'), [
+        ->post(route('my.auctions.all.ban-users'), [
             'user_ids' => [$userToBan->id],
         ])
         ->assertRedirect()
@@ -144,7 +144,7 @@ it('handles banning a single user', function () {
     $userToBan = User::factory()->create(['email_verified_at' => now()]);
 
     actingAs($this->owner)
-        ->post(route('my.auctions.all.ban-participants'), [
+        ->post(route('my.auctions.all.ban-users'), [
             'user_ids' => [$userToBan->id],
         ])
         ->assertRedirect()
@@ -157,7 +157,7 @@ it('handles banning a single user', function () {
 
 it('rejects empty user_ids array', function () {
     actingAs($this->owner)
-        ->post(route('my.auctions.all.ban-participants'), [
+        ->post(route('my.auctions.all.ban-users'), [
             'user_ids' => [],
         ])
         ->assertInvalid(['user_ids']);

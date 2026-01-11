@@ -123,7 +123,7 @@ php artisan test tests/Browser/
 - **Auction**: Central auction entity with state machine
 - **Lot**: Individual items within an auction
 - **Bid**: Bid records with status tracking
-- **AuctionParticipant**: User participation in auctions
+- **AuctionRegistration**: User participation in auctions
 - **Settlement**: Post-auction financial settlement
 - **PaymentIntent**: Payment processing records
 - **Ban**: User ban management

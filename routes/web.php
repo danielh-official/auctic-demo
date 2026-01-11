@@ -1,11 +1,11 @@
 <?php
 
 use App\Http\Controllers\AuctionController;
-use App\Http\Controllers\AuctionParticipant\AcceptInvitationToAuctionFromOwner;
-use App\Http\Controllers\AuctionParticipant\BanParticipantsFromAllMyAuctions;
-use App\Http\Controllers\AuctionParticipant\BanParticipantsFromMyAuction;
-use App\Http\Controllers\AuctionParticipant\InviteParticipantsToMyAuction;
-use App\Http\Controllers\AuctionParticipant\JoinAuction;
+use App\Http\Controllers\AuctionRegistration\AcceptInvitationToAuctionFromOwner;
+use App\Http\Controllers\AuctionRegistration\BanUsersFromAllMyAuctions;
+use App\Http\Controllers\AuctionRegistration\BanUsersFromMyAuction;
+use App\Http\Controllers\AuctionRegistration\InviteUsersToMyAuction;
+use App\Http\Controllers\AuctionRegistration\JoinAuction;
 use App\Http\Controllers\MyAuctionController;
 use App\Http\Controllers\MyAuctionLotController;
 use App\Http\Controllers\Pay;
@@ -48,14 +48,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('auctions', MyAuctionController::class);
 
         Route::prefix('auctions')->name('auctions.')->group(function () {
-            Route::post('/all/ban-participants', BanParticipantsFromAllMyAuctions::class)->name('all.ban-participants');
+            Route::post('/all/ban-users', BanUsersFromAllMyAuctions::class)->name('all.ban-users');
 
             Route::prefix('{auction}')->group(function () {
                 Route::resource('lots', MyAuctionLotController::class);
 
-                Route::post('/ban-participants', BanParticipantsFromMyAuction::class)->name('ban-participants');
+                Route::post('/ban-users', BanUsersFromMyAuction::class)->name('ban-users');
 
-                Route::post('/invite-participants', InviteParticipantsToMyAuction::class)->name('invite-participants');
+                Route::post('/invite-users', InviteUsersToMyAuction::class)->name('invite-users');
             });
         });
     });
