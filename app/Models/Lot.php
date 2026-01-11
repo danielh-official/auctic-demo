@@ -57,9 +57,4 @@ class Lot extends Model
     {
         return $this->hasOne(Bid::class)->ofMany('amount_cents', 'max');
     }
-
-    public function settlement(): HasOne
-    {
-        return $this->hasOne(Settlement::class);
-    }
 }

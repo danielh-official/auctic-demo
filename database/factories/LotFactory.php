@@ -24,6 +24,7 @@ class LotFactory extends Factory
             'sku' => $this->faker->optional()->bothify('LOT-####'),
             'reserve_price_cents' => $this->faker->numberBetween(5_000, 50_000),
             'status' => LotStatus::Pending,
+            'auction_bill_id' => null,
         ];
     }
 

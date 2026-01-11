@@ -1,6 +1,6 @@
 # Database ER Diagram
 
-Last Updated: January 10, 2025
+Last Updated: January 10, 2026
 
 This document is intended to highlight the entity relationship plan the backend engineer intends to build for the web app.
 
@@ -46,7 +46,6 @@ erDiagram
     }
 
     lots ||--o{ bids : "receives"
-    lots ||--o| settlements : "settled_by"
     lots {
         bigint id PK
         bigint auction_id FK
@@ -79,25 +78,19 @@ erDiagram
         timestamp updated_at
     }
 
-    settlements ||--o{ payment_intents : "generates"
-    settlements ||--o| bids : "references_winning_bid"
-    settlements {
+    auctions ||--o{ auction_bills : "generates"
+    users ||--o{ auction_bills : "owes"
+    auction_bills {
         bigint id PK
-        bigint lot_id FK, UK
-        bigint winning_bid_id FK
+        bigint auction_id FK
+        bigint user_id FK
+        bigint subtotal_cents
         bigint buyer_premium_cents
+        bigint tax_cents
         bigint total_cents
-        string status "pending|completed|failed"
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    payment_intents {
-        bigint id PK
-        bigint settlement_id FK
-        bigint amount_cents
-        string status "initiated|authorized|captured|failed"
-        string reference
+        bigint paid_cents
+        string status "unpaid|partially_paid|paid|overdue|voided"
+        timestamp due_at
         timestamp created_at
         timestamp updated_at
     }
@@ -112,23 +105,21 @@ erDiagram
 ### Core Auction Flow
 - **Auctions** contain multiple **Lots**
 - **Lots** receive multiple **Bids** from users
-- **Settlements** are created for each lot after auction closes
-- **Payment Intents** track payment processing for settlements
+- **Auction Bills** aggregate all winning lots for a user in an auction
 
 ### User Participation
 - **Users** place **Bids** on lots
 - **Users** participate in auctions via **Auction Registrations**
 - Only approved participants can bid
 
-### Settlement & Payment
-- Each **Lot** has at most one **Settlement** (unique constraint)
-- **Settlement** references the winning **Bid**
-- **Settlement** generates one or more **Payment Intents**
+### Billing & Payment
+- Each **User** has at most one **Auction Bill** per auction (unique constraint on auction_id, user_id)
+- **Auction Bill** aggregates totals from all lots won by the user in an auction
 
 ## Key Constraints
 
 - `auction_registrations`: Unique constraint on `(auction_id, user_id)` prevents duplicate registrations
-- `settlements`: Unique constraint on `lot_id` ensures one settlement per lot
+- `auction_bills`: Unique constraint on `(auction_id, user_id)` ensures one bill per user per auction
 - All foreign keys use `cascadeOnDelete` for referential integrity
 - Composite index on `bids(lot_id, amount_cents)` for efficient bid querying
 
@@ -138,6 +129,5 @@ Refer to `app/Enums/` for authoritative enum values:
 - `AuctionState`: Draft, Scheduled, Live, Closing, Closed, Settled
 - `LotStatus`: Pending, Active, Sold, Unsold
 - `BidStatus`: Accepted, Rejected, Outbid
-- `RegistrationStatus`: Approved, Rejected, Suspended
-- `SettlementStatus`: Pending, Completed, Failed
+- `AuctionBillStatus`: Unpaid, PartiallyPaid, Paid, Overdue, Void
 - `PaymentIntentStatus`: Initiated, Authorized, Captured, Failed

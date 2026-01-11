@@ -66,6 +66,11 @@ class Auction extends Model
         return $this->belongsTo(User::class, 'owner_id');
     }
 
+    public function bills(): HasMany
+    {
+        return $this->hasMany(AuctionBill::class);
+    }
+
     public function isActive(): Attribute
     {
         return Attribute::make(
