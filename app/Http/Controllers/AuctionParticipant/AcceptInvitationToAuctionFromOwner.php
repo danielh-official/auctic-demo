@@ -17,7 +17,7 @@ class AcceptInvitationToAuctionFromOwner extends Controller
         /**
          * @var AuctionParticipant $invite
          */
-        $invite = $auction->participants()
+        $invite = $auction->participations()
             ->where('user_id', auth()->id())
             ->where('status', 'invited')
             ->firstOrFail();
