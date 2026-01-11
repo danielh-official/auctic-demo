@@ -10,7 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Queue\SerializesModels;
 
-class CreateBillsForAuction implements ShouldQueue, ShouldBeUnique
+class CreateBillsForAuction implements ShouldBeUnique, ShouldQueue
 {
     use Queueable, SerializesModels;
 
@@ -19,8 +19,7 @@ class CreateBillsForAuction implements ShouldQueue, ShouldBeUnique
      */
     public function __construct(
         protected Auction $auction
-    )
-    {
+    ) {
         //
     }
 

@@ -262,7 +262,7 @@ it('prevents race conditions when two users bid simultaneously', function () {
         'live_ends_at' => now()->addHour(),
     ]);
     $lot = Lot::factory()->create(['auction_id' => $auction->id]);
-    
+
     // Create initial bid
     Bid::factory()->create([
         'lot_id' => $lot->id,
@@ -281,13 +281,13 @@ it('prevents race conditions when two users bid simultaneously', function () {
 
     try {
         DB::beginTransaction();
-        
+
         // User 2 places bid
         actingAs($user2)
             ->post(route('auctions.lots.bid', $lot), [
                 'amount_cents' => 15000,
             ]);
-        
+
         $successCount++;
         DB::commit();
     } catch (\Exception $e) {
@@ -297,13 +297,13 @@ it('prevents race conditions when two users bid simultaneously', function () {
 
     try {
         DB::beginTransaction();
-        
+
         // User 3 tries to place same bid amount
         actingAs($user3)
             ->post(route('auctions.lots.bid', $lot), [
                 'amount_cents' => 15000,
             ]);
-        
+
         $successCount++;
         DB::commit();
     } catch (\Exception $e) {
@@ -314,12 +314,12 @@ it('prevents race conditions when two users bid simultaneously', function () {
     // Refresh and verify only valid bids were created
     $lot->refresh();
     $bids = $lot->bids()->orderBy('amount_cents', 'asc')->get();
-    
+
     // We should have exactly 2 bids: the initial 10000 and one 15000
     // The second 15000 should have been rejected
     expect($bids->count())->toBe(2);
     expect($bids->pluck('amount_cents')->toArray())->toBe([10000, 15000]);
-    
+
     // The highest bid should be 15000
     $highestBid = $lot->bids()->orderBy('amount_cents', 'desc')->first();
     expect($highestBid->amount_cents)->toBe(15000);

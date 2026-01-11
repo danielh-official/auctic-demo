@@ -24,7 +24,7 @@ class AuctionBillFactory extends Factory
         $taxRate = fake()->randomFloat(4, 0.05, 0.10); // 5-10%
         $tax = (int) round(($subtotal + $buyersPremium) * $taxRate);
         $total = $subtotal + $buyersPremium + $tax;
-        
+
         return [
             'auction_id' => Auction::factory(),
             'user_id' => User::factory(),
