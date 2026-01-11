@@ -3,7 +3,7 @@
 > [!NOTE]
 > Work in progress.
 
-Last Updated: January 10, 2025
+Last Updated: January 10, 2026
 
 This document is intended to highlight the routes the backend engineer intends to build for the web app.
 
