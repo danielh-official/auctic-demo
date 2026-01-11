@@ -36,6 +36,6 @@ class SetHighestAcceptedBid implements ShouldBeUnique, ShouldQueue
 
     public function uniqueId()
     {
-        return "lot:{$this->lot->id}";
+        return "set-highest-accept-bid-for-lot:{$this->lot->id}";
     }
 }
