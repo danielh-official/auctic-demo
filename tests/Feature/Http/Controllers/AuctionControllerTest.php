@@ -100,7 +100,7 @@ test('user can view their own auction from public view', function () {
 
 test('guest cannot view draft auction', function () {
     $this->markTestIncomplete('Frontend not implemented yet');
-    
+
     $owner = User::factory()->create();
     $auction = Auction::factory()->for($owner, 'owner')->create(['state' => AuctionState::Draft]);
 
