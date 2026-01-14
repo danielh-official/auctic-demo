@@ -24,7 +24,6 @@ class MyAuctionController extends Controller
     public function index(): Response
     {
         // TODO: Implement frontend view
-        // $this->authorize('viewAny', Auction::class);
         //
         // $auctions = Auction::query()
         //     ->where('owner_id', auth()->id())
@@ -45,8 +44,7 @@ class MyAuctionController extends Controller
     public function create(): Response
     {
         // TODO: Implement frontend view
-        // $this->authorize('create', Auction::class);
-        //
+        //         //
         // return Inertia::render('Auctions/Create');
 
         abort(501, 'Frontend not implemented');
@@ -73,7 +71,6 @@ class MyAuctionController extends Controller
     public function show(Auction $auction): Response
     {
         // TODO: Implement frontend view
-        // $this->authorize('view', $auction);
         //
         // $auction->load(['lots', 'owner']);
         //
@@ -90,7 +87,6 @@ class MyAuctionController extends Controller
     public function edit(Auction $auction): Response
     {
         // TODO: Implement frontend view
-        // $this->authorize('update', $auction);
         //
         // return Inertia::render('Auctions/Edit', [
         //     'auction' => $auction,
@@ -104,6 +100,10 @@ class MyAuctionController extends Controller
      */
     public function update(UpdateAuctionRequest $request, Auction $auction): RedirectResponse
     {
+        if ($auction->owner_id !== auth()->id()) {
+            abort(403, 'You do not have permission to delete this auction.');
+        }
+
         $auction->update($request->validated());
 
         return to_route('my.auctions.show', $auction)
@@ -115,7 +115,9 @@ class MyAuctionController extends Controller
      */
     public function destroy(Auction $auction): RedirectResponse
     {
-        $this->authorize('delete', $auction);
+        if ($auction->owner_id !== auth()->id()) {
+            abort(403, 'You do not have permission to delete this auction.');
+        }
 
         $auction->delete();
 

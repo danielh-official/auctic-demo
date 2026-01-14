@@ -13,7 +13,7 @@ class UpdateAuctionRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->can('update', $this->route('auction'));
+        return true;
     }
 
     /**

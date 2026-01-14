@@ -48,9 +48,6 @@ class AuctionController extends Controller
      */
     public function show(Auction $auction): Response
     {
-        // Check authorization - only allow viewing published auctions or owner/admin
-        $this->authorize('view', $auction);
-
         // TODO: Implement frontend view
         // $auction->load([
         //     'owner',
