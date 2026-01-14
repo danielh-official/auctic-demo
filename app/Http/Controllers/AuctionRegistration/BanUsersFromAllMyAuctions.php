@@ -27,7 +27,7 @@ class BanUsersFromAllMyAuctions extends Controller
         $validUserIds = collect($validUserIds);
 
         // Upsert a bans record for each valid user_id with the current user's id as the owner_id and the user_id as the banned_user_id, ignoring any user id that doesn't exist or the owner's own user id
-        Ban::upsert(
+        Ban::query()->upsert(
             $validUserIds->map(function ($userId) {
                 return [
                     'owner_id' => auth()->id(),
