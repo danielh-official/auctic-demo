@@ -74,4 +74,33 @@ The current highest bidder must wait to be outbid before placing a new bid. No e
 
 ## Diagram
 
-TODO
+```mermaid
+sequenceDiagram
+    participant User
+    participant Queue
+    participant System
+    participant DB
+
+    Note over User,DB: Happy Path: Bid Accepted
+    User->>Queue: Submit Bid ($100)
+    Queue->>System: Process Bid
+    System->>DB: Validate & Store
+    DB-->>System: ✓ Saved
+    System->>User: ✓ Bid Accepted<br/>Start 60s cooldown
+    
+    Note over User,DB: Outbid Scenario
+    User->>Queue: Submit Bid ($150)
+    Queue->>System: Process Bid
+    System->>DB: Store (now current high)
+    System->>User: ✓ You're winning!<br/>BLOCKED until outbid
+    Note over User: Cannot bid again<br/>until someone outbids
+
+    Note over User,DB: Rejected Bid (Too Low)
+    User->>Queue: Submit Bid ($120)
+    System->>DB: Check current high ($150)
+    System->>User: ✗ Rejected!<br/>Min bid is $200<br/>NO cooldown - try again
+
+    Note over User,DB: Near Deadline
+    System->>System: Reduce cooldown<br/>60s → 30s
+    System->>User: 🔔 Cooldown reduced!<br/>Faster bidding enabled
+```
