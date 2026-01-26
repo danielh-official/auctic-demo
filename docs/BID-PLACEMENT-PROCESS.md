@@ -1,4 +1,4 @@
-# PlaceBid Controller
+# Bid Placement Process
 
 ## Concrete Example In Writing
 
