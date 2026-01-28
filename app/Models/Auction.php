@@ -74,7 +74,9 @@ class Auction extends Model
     public function isActive(): Attribute
     {
         return Attribute::make(
-            get: fn (): bool => $this->state === AuctionState::Live && $this->live_at && now() < $this->live_ends_at,
+            get: fn (): bool => $this->state === AuctionState::Live
+                && now()->between($this->live_at, $this->live_ends_at
+                ),
         );
     }
 }

@@ -2,17 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\BidStatus;
-// use App\Models\Auction;
-use App\Jobs\SetHighestAcceptedBid;
+use App\Enums\LotStatus;
+use App\Jobs\ProcessBidPlacement;
 use App\Models\Lot;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class PlaceBid extends Controller
 {
     public function __invoke(Request $request, Lot $lot)
     {
+        // Check if the auction is active
+        if (! $lot->auction->is_active) {
+            return back()->with('error', 'This auction is not active. You cannot place a bid at this time.');
+        }
+
+        // Check if lot is accepting bids
+        if ($lot->status !== LotStatus::Open) {
+            return back()->with('error', 'This lot is not accepting bids at this time.');
+        }
+
         // Validate the incoming request data
         $validatedData = $request->validate([
             'amount_cents' => 'required|integer|min:1',
@@ -20,38 +28,36 @@ class PlaceBid extends Controller
 
         $amount = $validatedData['amount_cents'];
 
-        // Check if the auction is active
-        if (! $lot->auction->is_active) {
-            return back()->with('error', 'This auction is not active. You cannot place a bid at this time.');
-        }
+        // TODO: Input into job queue for processing
+        // $isFirstBid = $lot->bids()->count() === 0;
 
-        return DB::transaction(function () use ($lot, $amount) {
-            // Lock the bids table for this lot to prevent race conditions
-            $currentHighestBid = $lot->bids()
-                ->lockForUpdate()
-                ->orderBy('amount_cents', 'desc')
-                ->first();
+        // if (! $isFirstBid && $amount <= $lot->reserve_price_cents) {
+        //     return back()->with('error', 'Your bid must be higher than the reserve price.');
+        // }
 
-            if ($currentHighestBid && $amount <= $currentHighestBid->amount_cents) {
-                return back()->with('error', 'Bid amount must be higher than the current highest bid.');
-            }
+        // // Check if bid is higher than the current highest bid
+        // $currentHighestBid = $lot->bids()->orderByDesc('amount_cents')->first();
 
-            // A user cannot place a bid if they are currently the highest bidder
-            if ($currentHighestBid && $currentHighestBid->user_id === auth()->id()) {
-                return back()->with('error', 'You are already the highest bidder. You cannot place another bid on this lot at this time.');
-            }
+        // $minimumIncrement = 5000; // e.g., $50.00 in cents
 
-            // Create a new bid
-            $lot->bids()->create([
-                'user_id' => auth()->id(),
-                'amount_cents' => $amount,
-                'status' => BidStatus::Accepted,
-            ]);
+        // $minimumBid = $currentHighestBid->amount_cents + $minimumIncrement;
 
-            // Dispatch job to set previous highest bid to Outbid
-            SetHighestAcceptedBid::dispatch($lot);
+        // if ($currentHighestBid && $amount <= $minimumBid) {
+        //     $minimumBidInDollars = number_format($minimumBid / 100, 2);
 
-            return back()->with('success', "Your bid for $amount has been placed successfully!");
-        });
+        //     return back()->with('error', "Your bid must be higher than \${$minimumBidInDollars}.");
+        // }
+
+        $placedAt = now();
+        $userId = auth()->id();
+
+        ProcessBidPlacement::dispatch(
+            lotId: $lot->id,
+            userId: $userId,
+            amountCents: $amount,
+            placedAt: $placedAt,
+        );
+
+        return back()->with('success', 'Your bid has been placed. Please give it some time to be processed.');
     }
 }
