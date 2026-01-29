@@ -18,7 +18,7 @@ class Bid extends Model
     protected $fillable = [
         'lot_id',
         'user_id',
-        'amount_cents',
+        'amount',
         'status',
         'placed_at',
     ];
@@ -29,7 +29,7 @@ class Bid extends Model
     protected function casts(): array
     {
         return [
-            'amount_cents' => 'int',
+            'amount' => 'int',
             'status' => BidStatus::class,
             'placed_at' => 'datetime',
         ];

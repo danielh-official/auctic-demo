@@ -17,8 +17,8 @@ it('successfully processes payment for an unpaid bill', function () {
         'auction_id' => $this->auction->id,
         'user_id' => $this->user->id,
         'status' => AuctionBillStatus::Unpaid,
-        'total_cents' => 10000,
-        'paid_cents' => 0,
+        'total_amount' => 10000,
+        'paid_amount' => 0,
     ]);
 
     $response = actingAs($this->user)
@@ -32,7 +32,7 @@ it('successfully processes payment for an unpaid bill', function () {
 
     $bill->refresh();
     expect($bill->status)->toBe(AuctionBillStatus::Paid)
-        ->and($bill->paid_cents)->toBe(10000)
+        ->and($bill->paid_amount)->toBe(10000)
         ->and($bill->payment_method)->toBe('credit_card')
         ->and($bill->payment_reference)->toBe('REF123456');
 });
@@ -42,8 +42,8 @@ it('prevents payment of already paid bill', function () {
         'auction_id' => $this->auction->id,
         'user_id' => $this->user->id,
         'status' => AuctionBillStatus::Paid,
-        'total_cents' => 10000,
-        'paid_cents' => 10000,
+        'total_amount' => 10000,
+        'paid_amount' => 10000,
         'payment_method' => 'credit_card',
         'payment_reference' => 'OLD_REF',
     ]);
@@ -130,7 +130,7 @@ it('handles different payment methods correctly', function (string $method) {
         'auction_id' => $this->auction->id,
         'user_id' => $this->user->id,
         'status' => AuctionBillStatus::Unpaid,
-        'total_cents' => 5000,
+        'total_amount' => 5000,
     ]);
 
     $response = actingAs($this->user)

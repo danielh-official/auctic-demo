@@ -23,7 +23,7 @@ class Lot extends Model
         'auction_id',
         'title',
         'sku',
-        'reserve_price_cents',
+        'reserve_price',
         'status',
     ];
 
@@ -33,7 +33,7 @@ class Lot extends Model
     protected function casts(): array
     {
         return [
-            'reserve_price_cents' => 'int',
+            'reserve_price' => 'int',
             'status' => LotStatus::class,
         ];
     }
@@ -55,6 +55,6 @@ class Lot extends Model
 
     public function winningBid(): HasOne
     {
-        return $this->hasOne(Bid::class)->ofMany('amount_cents', 'max');
+        return $this->hasOne(Bid::class)->ofMany('amount', 'max');
     }
 }

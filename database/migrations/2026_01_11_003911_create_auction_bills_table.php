@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('auction_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->unsignedBigInteger('subtotal_cents')->default(0);
-            $table->unsignedBigInteger('buyer_premium_cents')->default(0);
-            $table->unsignedBigInteger('tax_cents')->default(0);
-            $table->unsignedBigInteger('total_cents')->default(0);
-            $table->unsignedBigInteger('paid_cents')->default(0);
+            $table->unsignedBigInteger('subtotal_amount')->default(0);
+            $table->unsignedBigInteger('buyer_premium_amount')->default(0);
+            $table->unsignedBigInteger('tax_amount')->default(0);
+            $table->unsignedBigInteger('total_amount')->default(0);
+            $table->unsignedBigInteger('paid_amount')->default(0);
             $table->string('payment_method')->nullable();
             $table->string('payment_reference')->nullable();
             $table->string('status')->default('unpaid')->index();

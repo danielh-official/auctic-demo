@@ -22,7 +22,7 @@ class BidFactory extends Factory
         return [
             'lot_id' => Lot::factory(),
             'user_id' => User::factory(),
-            'amount_cents' => $this->faker->numberBetween(10_000, 100_000),
+            'amount' => $this->faker->numberBetween(10_000, 100_000),
             'status' => BidStatus::Accepted,
             'placed_at' => now(),
         ];

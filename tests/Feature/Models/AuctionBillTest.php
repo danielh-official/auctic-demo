@@ -12,19 +12,19 @@ test('auction bill can be created with correct attributes', function () {
     $bill = AuctionBill::factory()->create([
         'auction_id' => $auction->id,
         'user_id' => $user->id,
-        'subtotal_cents' => 100000,
-        'buyer_premium_cents' => 15000,
-        'tax_cents' => 9200,
-        'total_cents' => 124200,
-        'paid_cents' => 0,
+        'subtotal_amount' => 100000,
+        'buyer_premium_amount' => 15000,
+        'tax_amount' => 9200,
+        'total_amount' => 124200,
+        'paid_amount' => 0,
         'status' => AuctionBillStatus::Unpaid,
     ]);
 
-    expect($bill->subtotal_cents)->toBe(100000)
-        ->and($bill->buyer_premium_cents)->toBe(15000)
-        ->and($bill->tax_cents)->toBe(9200)
-        ->and($bill->total_cents)->toBe(124200)
-        ->and($bill->paid_cents)->toBe(0)
+    expect($bill->subtotal_amount)->toBe(100000)
+        ->and($bill->buyer_premium_amount)->toBe(15000)
+        ->and($bill->tax_amount)->toBe(9200)
+        ->and($bill->total_amount)->toBe(124200)
+        ->and($bill->paid_amount)->toBe(0)
         ->and($bill->status)->toBe(AuctionBillStatus::Unpaid);
 });
 
@@ -46,35 +46,35 @@ test('auction bill belongs to a user', function () {
 
 test('remaining balance is calculated correctly', function () {
     $bill = AuctionBill::factory()->create([
-        'total_cents' => 100000,
-        'paid_cents' => 30000,
+        'total_amount' => 100000,
+        'paid_amount' => 30000,
     ]);
 
-    expect($bill->remainingBalanceCents())->toBe(70000);
+    expect($bill->remaining_balance_amount)->toBe(70000);
 });
 
 test('remaining balance is zero when fully paid', function () {
     $bill = AuctionBill::factory()->create([
-        'total_cents' => 100000,
-        'paid_cents' => 100000,
+        'total_amount' => 100000,
+        'paid_amount' => 100000,
     ]);
 
-    expect($bill->remainingBalanceCents())->toBe(0);
+    expect($bill->remaining_balance_amount)->toBe(0);
 });
 
 test('remaining balance cannot be negative', function () {
     $bill = AuctionBill::factory()->create([
-        'total_cents' => 100000,
-        'paid_cents' => 120000,
+        'total_amount' => 100000,
+        'paid_amount' => 120000,
     ]);
 
-    expect($bill->remainingBalanceCents())->toBe(0);
+    expect($bill->remaining_balance_amount)->toBe(0);
 });
 
 test('is fully paid returns true when paid amount equals total', function () {
     $bill = AuctionBill::factory()->create([
-        'total_cents' => 100000,
-        'paid_cents' => 100000,
+        'total_amount' => 100000,
+        'paid_amount' => 100000,
     ]);
 
     expect($bill->isFullyPaid())->toBeTrue();
@@ -82,8 +82,8 @@ test('is fully paid returns true when paid amount equals total', function () {
 
 test('is fully paid returns true when paid amount exceeds total', function () {
     $bill = AuctionBill::factory()->create([
-        'total_cents' => 100000,
-        'paid_cents' => 110000,
+        'total_amount' => 100000,
+        'paid_amount' => 110000,
     ]);
 
     expect($bill->isFullyPaid())->toBeTrue();
@@ -91,8 +91,8 @@ test('is fully paid returns true when paid amount exceeds total', function () {
 
 test('is fully paid returns false when partially paid', function () {
     $bill = AuctionBill::factory()->create([
-        'total_cents' => 100000,
-        'paid_cents' => 50000,
+        'total_amount' => 100000,
+        'paid_amount' => 50000,
     ]);
 
     expect($bill->isFullyPaid())->toBeFalse();
@@ -100,8 +100,8 @@ test('is fully paid returns false when partially paid', function () {
 
 test('is overdue returns true when past due date and not fully paid', function () {
     $bill = AuctionBill::factory()->create([
-        'total_cents' => 100000,
-        'paid_cents' => 50000,
+        'total_amount' => 100000,
+        'paid_amount' => 50000,
         'due_at' => now()->subDays(5),
     ]);
 
@@ -110,8 +110,8 @@ test('is overdue returns true when past due date and not fully paid', function (
 
 test('is overdue returns false when past due date but fully paid', function () {
     $bill = AuctionBill::factory()->create([
-        'total_cents' => 100000,
-        'paid_cents' => 100000,
+        'total_amount' => 100000,
+        'paid_amount' => 100000,
         'due_at' => now()->subDays(5),
     ]);
 
@@ -120,8 +120,8 @@ test('is overdue returns false when past due date but fully paid', function () {
 
 test('is overdue returns false when not yet due', function () {
     $bill = AuctionBill::factory()->create([
-        'total_cents' => 100000,
-        'paid_cents' => 50000,
+        'total_amount' => 100000,
+        'paid_amount' => 50000,
         'due_at' => now()->addDays(5),
     ]);
 
@@ -130,8 +130,8 @@ test('is overdue returns false when not yet due', function () {
 
 test('is overdue returns false when no due date set', function () {
     $bill = AuctionBill::factory()->create([
-        'total_cents' => 100000,
-        'paid_cents' => 50000,
+        'total_amount' => 100000,
+        'paid_amount' => 50000,
         'due_at' => null,
     ]);
 

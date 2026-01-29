@@ -51,7 +51,7 @@ erDiagram
         bigint auction_id FK
         string title
         string sku
-        bigint reserve_price_cents
+        bigint reserve_price
         string status "pending|active|sold|unsold"
         timestamp created_at
         timestamp updated_at
@@ -62,7 +62,7 @@ erDiagram
         bigint id PK
         bigint lot_id FK
         bigint user_id FK
-        bigint amount_cents
+        bigint amount
         string status "accepted|rejected|outbid"
         timestamp placed_at
         timestamp created_at
@@ -84,11 +84,11 @@ erDiagram
         bigint id PK
         bigint auction_id FK
         bigint user_id FK
-        bigint subtotal_cents
-        bigint buyer_premium_cents
-        bigint tax_cents
-        bigint total_cents
-        bigint paid_cents
+        bigint subtotal_amount
+        bigint buyer_premium_amount
+        bigint tax_amount
+        bigint total_amount
+        bigint paid_amount
         string status "unpaid|partially_paid|paid|overdue|voided"
         timestamp due_at
         timestamp created_at
@@ -121,7 +121,7 @@ erDiagram
 - `auction_registrations`: Unique constraint on `(auction_id, user_id)` prevents duplicate registrations
 - `auction_bills`: Unique constraint on `(auction_id, user_id)` ensures one bill per user per auction
 - All foreign keys use `cascadeOnDelete` for referential integrity
-- Composite index on `bids(lot_id, amount_cents)` for efficient bid querying
+- Composite index on `bids(lot_id, amount)` for efficient bid querying
 
 ## State Enums
 

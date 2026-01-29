@@ -28,11 +28,11 @@ class AuctionBillFactory extends Factory
         return [
             'auction_id' => Auction::factory(),
             'user_id' => User::factory(),
-            'subtotal_cents' => $subtotal,
-            'buyer_premium_cents' => $buyersPremium,
-            'tax_cents' => $tax,
-            'total_cents' => $total,
-            'paid_cents' => 0,
+            'subtotal_amount' => $subtotal,
+            'buyer_premium_amount' => $buyersPremium,
+            'tax_amount' => $tax,
+            'total_amount' => $total,
+            'paid_amount' => 0,
             'status' => 'unpaid',
             'due_at' => fake()->dateTimeBetween('now', '+30 days'),
             'payment_method' => null,
@@ -47,7 +47,7 @@ class AuctionBillFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => 'paid',
-            'paid_cents' => $attributes['total_cents'],
+            'paid_amount' => $attributes['total_amount'],
         ]);
     }
 
@@ -58,7 +58,7 @@ class AuctionBillFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'status' => 'unpaid',
-            'paid_cents' => 0,
+            'paid_amount' => 0,
         ]);
     }
 }

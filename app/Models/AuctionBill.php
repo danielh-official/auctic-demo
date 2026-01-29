@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\AuctionBillStatus;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -18,11 +19,11 @@ class AuctionBill extends Model
     protected $fillable = [
         'auction_id',
         'user_id',
-        'subtotal_cents',
-        'buyer_premium_cents',
-        'tax_cents',
-        'total_cents',
-        'paid_cents',
+        'subtotal_amount',
+        'buyer_premium_amount',
+        'tax_amount',
+        'total_amount',
+        'paid_amount',
         'status',
         'due_at',
     ];
@@ -33,11 +34,11 @@ class AuctionBill extends Model
     protected function casts(): array
     {
         return [
-            'subtotal_cents' => 'int',
-            'buyer_premium_cents' => 'int',
-            'tax_cents' => 'int',
-            'total_cents' => 'int',
-            'paid_cents' => 'int',
+            'subtotal_amount' => 'int',
+            'buyer_premium_amount' => 'int',
+            'tax_amount' => 'int',
+            'total_amount' => 'int',
+            'paid_amount' => 'int',
             'status' => AuctionBillStatus::class,
             'due_at' => 'datetime',
         ];
@@ -53,14 +54,14 @@ class AuctionBill extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function remainingBalanceCents(): int
+    public function remainingBalanceAmount(): Attribute
     {
-        return max(0, $this->total_cents - $this->paid_cents);
+        return Attribute::get(fn () => max(0, $this->total_amount - $this->paid_amount));
     }
 
     public function isFullyPaid(): bool
     {
-        return $this->paid_cents >= $this->total_cents;
+        return $this->paid_amount >= $this->total_amount;
     }
 
     public function isOverdue(): bool

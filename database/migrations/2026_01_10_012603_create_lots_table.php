@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('auction_id')->constrained()->cascadeOnDelete();
             $table->string('title');
             $table->string('sku')->nullable();
-            $table->unsignedBigInteger('reserve_price_cents')->default(0);
+            $table->unsignedBigInteger('reserve_price')->default(0);
             $table->string('status')->default('pending')->index();
             $table->timestamps();
             $table->softDeletes();

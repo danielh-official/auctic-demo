@@ -15,11 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('lot_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->unsignedBigInteger('amount_cents');
+            $table->unsignedBigInteger('amount');
             $table->string('status')->default('accepted')->index();
             $table->timestamp('placed_at')->useCurrent();
             $table->timestamps();
-            $table->index(['lot_id', 'amount_cents']);
+            $table->index(['lot_id', 'amount']);
         });
     }
 

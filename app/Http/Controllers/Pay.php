@@ -28,7 +28,7 @@ class Pay extends Controller
 
         // Mark the bill as paid
         $bill->status = AuctionBillStatus::Paid;
-        $bill->paid_cents = $bill->total_cents; // Assuming full payment
+        $bill->paid_amount = $bill->total_amount; // Assuming full payment
         $bill->payment_method = $request->input('payment_method');
         $bill->payment_reference = $request->input('payment_reference');
         $bill->save();

@@ -51,7 +51,7 @@ class CreateBillsForAuction implements ShouldBeUnique, ShouldQueue
         // Group lots to bill by user ID (the bidder who won the lot)
         $billsData = $lotsToBill->groupBy(fn ($lot) => $lot->winningBid->user_id)
             ->map(function ($lots, $userId) {
-                $subtotal = $lots->sum(fn ($lot) => $lot->winningBid->amount_cents);
+                $subtotal = $lots->sum(fn ($lot) => $lot->winningBid->amount);
                 $buyersPremiumRate = 0.20; // Example fixed rate of 20%
                 $buyersPremium = (int) round($subtotal * $buyersPremiumRate);
                 $taxRate = 0.08; // Example fixed tax rate of 8%
@@ -61,11 +61,11 @@ class CreateBillsForAuction implements ShouldBeUnique, ShouldQueue
                 return [
                     'auction_id' => $this->auction->id,
                     'user_id' => $userId,
-                    'subtotal_cents' => $subtotal,
-                    'buyer_premium_cents' => $buyersPremium,
-                    'tax_cents' => $tax,
-                    'total_cents' => $total,
-                    'paid_cents' => 0,
+                    'subtotal_amount' => $subtotal,
+                    'buyer_premium_amount' => $buyersPremium,
+                    'tax_amount' => $tax,
+                    'total_amount' => $total,
+                    'paid_amount' => 0,
                     'status' => AuctionBillStatus::Unpaid,
                     'due_at' => now()->addDays(30),
                 ];
@@ -79,11 +79,11 @@ class CreateBillsForAuction implements ShouldBeUnique, ShouldQueue
                     'user_id' => $billData['user_id'],
                 ],
                 [
-                    'subtotal_cents' => $billData['subtotal_cents'],
-                    'buyer_premium_cents' => $billData['buyer_premium_cents'],
-                    'tax_cents' => $billData['tax_cents'],
-                    'total_cents' => $billData['total_cents'],
-                    'paid_cents' => 0,
+                    'subtotal_amount' => $billData['subtotal_amount'],
+                    'buyer_premium_amount' => $billData['buyer_premium_amount'],
+                    'tax_amount' => $billData['tax_amount'],
+                    'total_amount' => $billData['total_amount'],
+                    'paid_amount' => 0,
                     'status' => 'unpaid',
                     'due_at' => $billData['due_at'],
                 ]

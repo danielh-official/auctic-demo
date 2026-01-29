@@ -26,11 +26,11 @@ class SetHighestAcceptedBid implements ShouldBeUnique, ShouldQueue
     public function handle(): void
     {
         // Get highest bid for the lot
-        $highestBid = $this->lot->bids()->where('status', '<>', BidStatus::Rejected)->orderBy('amount_cents', 'desc')->first();
+        $highestBid = $this->lot->bids()->where('status', '<>', BidStatus::Rejected)->orderBy('amount', 'desc')->first();
 
         // Get all previous bids and make sure their status is set to Outbid
         $this->lot->bids()
-            ->where('amount_cents', '<', $highestBid->amount_cents)
+            ->where('amount', '<', $highestBid->amount)
             ->update(['status' => BidStatus::Outbid]);
     }
 

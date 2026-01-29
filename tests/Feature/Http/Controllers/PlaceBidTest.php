@@ -4,7 +4,6 @@ use App\Enums\AuctionState;
 use App\Enums\LotStatus;
 use App\Jobs\ProcessBidPlacement;
 use App\Models\Auction;
-use App\Models\Bid;
 use App\Models\Lot;
 use App\Models\User;
 use Illuminate\Support\Facades\Queue;
@@ -17,7 +16,6 @@ beforeEach(function () {
     $this->user = User::factory()->create(['email_verified_at' => now()]);
 });
 
-// 1. Happy path: valid bid accepted, cooldown started
 it('accepts a valid bid and starts cooldown', function () {
     Queue::fake();
 
@@ -29,7 +27,7 @@ it('accepts a valid bid and starts cooldown', function () {
 
     $lot = Lot::factory()->create([
         'auction_id' => $auction->id,
-        'reserve_price_cents' => 50000,
+        'reserve_price' => 50000,
         'status' => LotStatus::Open,
     ]);
 
@@ -40,7 +38,7 @@ it('accepts a valid bid and starts cooldown', function () {
     postJson(route('auctions.lots.bid', [
         'lot' => $lot->id,
     ]), [
-        'amount_cents' => $bidAmount,
+        'amount' => $bidAmount,
     ])
         ->assertRedirect()
         ->assertSessionHas('success');
@@ -48,11 +46,4 @@ it('accepts a valid bid and starts cooldown', function () {
     assertDatabaseCount('bids', 0);
 
     Queue::assertPushed(ProcessBidPlacement::class);
-});
-
-// TODO: Implement tests
-
-// 2. Cooldown logic: enforce wait time, reduce cooldown near deadline, notify users
-it('enforces cooldown and notifies when reduced near deadline', function () {
-    // ...
 });

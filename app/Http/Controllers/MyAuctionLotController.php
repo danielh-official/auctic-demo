@@ -35,7 +35,7 @@ class MyAuctionLotController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'sku' => 'nullable|string|max:255',
-            'reserve_price_cents' => 'required|integer|min:0',
+            'reserve_price' => 'required|integer|min:0',
             'status' => ['required', 'string', new Enum(LotStatus::class)],
         ]);
 
@@ -47,7 +47,7 @@ class MyAuctionLotController extends Controller
             'auction_id' => $auction->id,
             'title' => $request->input('title'),
             'sku' => $request->input('sku'),
-            'reserve_price_cents' => $request->input('reserve_price_cents'),
+            'reserve_price' => $request->input('reserve_price'),
             'status' => $request->input('status'),
         ]);
 
@@ -79,7 +79,7 @@ class MyAuctionLotController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'sku' => 'nullable|string|max:255',
-            'reserve_price_cents' => 'required|integer|min:0',
+            'reserve_price' => 'required|integer|min:0',
             'status' => ['required', 'string', new Enum(LotStatus::class)],
         ]);
 
@@ -94,7 +94,7 @@ class MyAuctionLotController extends Controller
         $lot->update([
             'title' => $request->input('title'),
             'sku' => $request->input('sku'),
-            'reserve_price_cents' => $request->input('reserve_price_cents'),
+            'reserve_price' => $request->input('reserve_price'),
             'status' => $request->input('status'),
         ]);
 

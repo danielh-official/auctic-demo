@@ -33,15 +33,7 @@ class DatabaseSeeder extends Seeder
         foreach ($lots as $lot) {
             AuctionRegistration::factory()->for($auction)->for($admin)->create();
 
-            $settlement = Settlement::factory()->for($lot)->create();
-
-            PaymentIntent::factory()
-                ->for($settlement)
-                ->succeeded()
-                ->state([
-                    'amount_cents' => $settlement->total_cents,
-                ])
-                ->create();
+            // TODO: Add bids, auction bills, payment intents, settlements, etc.
         }
     }
 }
