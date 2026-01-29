@@ -23,38 +23,17 @@ class PlaceBid extends Controller
 
         // Validate the incoming request data
         $validatedData = $request->validate([
-            'amount_cents' => 'required|integer|min:1',
+            'amount' => 'required|integer|min:1',
         ]);
 
-        $amount = $validatedData['amount_cents'];
-
-        // TODO: Input into job queue for processing
-        // $isFirstBid = $lot->bids()->count() === 0;
-
-        // if (! $isFirstBid && $amount <= $lot->reserve_price_cents) {
-        //     return back()->with('error', 'Your bid must be higher than the reserve price.');
-        // }
-
-        // // Check if bid is higher than the current highest bid
-        // $currentHighestBid = $lot->bids()->orderByDesc('amount_cents')->first();
-
-        // $minimumIncrement = 5000; // e.g., $50.00 in cents
-
-        // $minimumBid = $currentHighestBid->amount_cents + $minimumIncrement;
-
-        // if ($currentHighestBid && $amount <= $minimumBid) {
-        //     $minimumBidInDollars = number_format($minimumBid / 100, 2);
-
-        //     return back()->with('error', "Your bid must be higher than \${$minimumBidInDollars}.");
-        // }
+        $amount = $validatedData['amount'];
 
         $placedAt = now();
-        $userId = auth()->id();
 
         ProcessBidPlacement::dispatch(
-            lotId: $lot->id,
-            userId: $userId,
-            amountCents: $amount,
+            lot: $lot,
+            user: auth()->user(),
+            amount: $amount,
             placedAt: $placedAt,
         );
 
