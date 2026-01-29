@@ -4,6 +4,9 @@ namespace App\Jobs;
 
 // use App\Enums\BidStatus;
 // use App\Models\Bid;
+use App\Models\Lot;
+use App\Models\User;
+use App\Notifications\BidRejected;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -20,9 +23,9 @@ class ProcessBidPlacement implements ShouldBeUnique, ShouldQueue
      * Create a new job instance.
      */
     public function __construct(
-        protected int $lotId,
-        protected int $userId,
-        protected int $amountCents,
+        protected Lot $lot,
+        protected User $user,
+        protected int $amount,
         protected Carbon $placedAt,
     ) {
         $this->onQueue('bids');
@@ -34,6 +37,33 @@ class ProcessBidPlacement implements ShouldBeUnique, ShouldQueue
     public function handle(): void
     {
         // TODO: Implement bid processing logic here
+
+        $isFirstBid = $this->lot->bids()->count() === 0;
+
+        if (! $isFirstBid && $this->amount <= $this->lot->reserve_price) {
+            $message = 'Your bid must be higher than the reserve price.';
+
+            $this->user->notify(new BidRejected($message));
+
+            $this->fail($message);
+        }
+
+        // Check if bid is higher than the current highest bid
+        $currentHighestBid = $this->lot->bids()->orderByDesc('amount')->first();
+
+        $minimumIncrement = 5000; // e.g., $50.00 in cents
+
+        $minimumBid = $currentHighestBid->amount + $minimumIncrement;
+
+        if ($currentHighestBid && $this->amount <= $minimumBid) {
+            $minimumBidInDollars = number_format($minimumBid / 100, 2);
+
+            $message = "Your bid must be higher than \${$minimumBidInDollars}.";
+
+            $this->user->notify(new BidRejected($message));
+
+            $this->fail($message);
+        }
     }
 
     /**
@@ -42,7 +72,7 @@ class ProcessBidPlacement implements ShouldBeUnique, ShouldQueue
      */
     public function uniqueId(): string
     {
-        return "place-bid:user:{$this->userId}:lot:{$this->lotId}";
+        return "place-bid:user:{$this->user->id}:lot:{$this->lot->id}";
     }
 
     /**
