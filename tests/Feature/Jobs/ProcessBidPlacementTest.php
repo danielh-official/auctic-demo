@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Notification;
 it('fails if first bid is below reserve price', function () {
     Notification::fake();
 
-    $lot = Lot::factory()->open()->create(['reserve_price' => 50000]);
+    $lot = Lot::factory()->open()->create(['reserve_price' => 50_000]);
     $user = User::factory()->create();
 
     $job = new ProcessBidPlacement(
@@ -30,7 +30,7 @@ it('fails if first bid is below reserve price', function () {
 it('fails if first bid equals reserve price', function () {
     Notification::fake();
 
-    $lot = Lot::factory()->open()->create(['reserve_price' => 50000]);
+    $lot = Lot::factory()->open()->create(['reserve_price' => 50_000]);
     $user = User::factory()->create();
 
     $job = new ProcessBidPlacement(
