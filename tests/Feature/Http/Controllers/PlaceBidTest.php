@@ -47,3 +47,67 @@ it('accepts a valid bid and starts cooldown', function () {
 
     Queue::assertPushed(ProcessBidPlacement::class);
 });
+
+it('cancels the bid if auction is not active', function () {
+    Queue::fake();
+
+    $auction = Auction::factory()->create([
+        'state' => AuctionState::Scheduled,
+        'live_at' => now()->addMinutes(10),
+        'live_ends_at' => now()->addMinutes(50),
+    ]);
+
+    $lot = Lot::factory()->create([
+        'auction_id' => $auction->id,
+        'reserve_price' => 50000,
+        'status' => LotStatus::Open,
+    ]);
+
+    actingAs($this->user);
+
+    $bidAmount = 100000; // $1,000.00
+
+    postJson(route('auctions.lots.bid', [
+        'lot' => $lot->id,
+    ]), [
+        'amount' => $bidAmount,
+    ])
+        ->assertRedirect()
+        ->assertSessionHas('error', 'This auction is not active. You cannot place a bid at this time.');
+
+    assertDatabaseCount('bids', 0);
+
+    Queue::assertNothingPushed();
+});
+
+it('cancels the bid if the lot is not accepting bids', function () {
+    Queue::fake();
+    
+    $auction = Auction::factory()->create([
+        'state' => AuctionState::Live,
+        'live_at' => now()->subMinutes(10),
+        'live_ends_at' => now()->addMinutes(50),
+    ]);
+
+    $lot = Lot::factory()->create([
+        'auction_id' => $auction->id,
+        'reserve_price' => 50000,
+        'status' => LotStatus::Sold,
+    ]);
+
+    actingAs($this->user);
+
+    $bidAmount = 100000; // $1,000.00
+
+    postJson(route('auctions.lots.bid', [
+        'lot' => $lot->id,
+    ]), [
+        'amount' => $bidAmount,
+    ])
+        ->assertRedirect()
+        ->assertSessionHas('error', 'This lot is not accepting bids at this time.');
+
+    assertDatabaseCount('bids', 0);
+
+    Queue::assertNothingPushed();
+});
