@@ -32,3 +32,12 @@ yarn-error.log
 /_ide_helper.php
 /_ide_helper_models.php
 .phpstorm.meta.php
+
+# boost
+boost.json
+.mcp.json
+CLAUDE.md
+AGENTS.md
+.github/copilot-instructions.md
+.cursor/
+opencode.json
