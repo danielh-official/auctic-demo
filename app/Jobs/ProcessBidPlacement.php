@@ -81,6 +81,7 @@ class ProcessBidPlacement implements ShouldBeUnique, ShouldQueue
                 // Update all previous bids to 'outbid' status
                 $this->lot->bids()
                     ->where('user_id', '!=', $this->user->id)
+                    ->lockForUpdate()
                     ->update(['status' => BidStatus::Outbid]);
             });
         } finally {
