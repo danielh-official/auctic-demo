@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('status')->default('accepted')->index();
             $table->timestamp('placed_at')->useCurrent();
             $table->timestamps();
-            $table->index(['lot_id', 'amount']);
+            $table->unique(['lot_id', 'user_id', 'amount']);
         });
     }
 

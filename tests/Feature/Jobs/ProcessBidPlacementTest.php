@@ -6,7 +6,9 @@ use App\Models\Bid;
 use App\Models\Lot;
 use App\Models\User;
 use App\Notifications\BidRejected;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Notification;
+
 use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseHas;
 
@@ -40,6 +42,32 @@ it('fails if first bid equals reserve price', function () {
         lot: $lot,
         user: $user,
         amount: 50_000,
+        placedAt: now()
+    );
+
+    $job->handle();
+
+    expect($lot->bids()->count())->toBe(0);
+    assertDatabaseCount(Bid::class, 0);
+    Notification::assertSentTo($user, BidRejected::class);
+});
+
+it('fails if a bid is already being processed for the user and lot', function () {
+    Notification::fake();
+
+    $lot = Lot::factory()->open()->create(['reserve_price' => 50_000]);
+    $user = User::factory()->create();
+
+    Cache::put(
+        ProcessBidPlacement::bidInProgressCacheKey($lot, $user),
+        true,
+        now()->addSeconds(60)
+    );
+
+    $job = new ProcessBidPlacement(
+        lot: $lot,
+        user: $user,
+        amount: 60_000,
         placedAt: now()
     );
 
@@ -118,7 +146,7 @@ it('accepts first bid above reserve price and creates accepted bid', function ()
     $job->handle();
 
     expect($lot->bids()->count())->toBe(1);
-    
+
     $bid = $lot->bids()->first();
     expect($bid->user_id)->toBe($user->id);
     expect($bid->amount)->toBe(60_000);
@@ -157,7 +185,7 @@ it('accepts subsequent valid bid and marks previous bid as outbid', function () 
     $job->handle();
 
     expect($lot->bids()->count())->toBe(2);
-    
+
     $newBid = $lot->bids()->where('user_id', $user->id)->first();
     expect($newBid->amount)->toBe(110_000);
     expect($newBid->status)->toBe(BidStatus::Accepted);
@@ -176,7 +204,7 @@ it('accepts subsequent valid bid and marks previous bid as outbid', function () 
         'amount' => 110_000,
         'status' => BidStatus::Accepted,
     ]);
-    
+
     Notification::assertNothingSent();
 });
 
@@ -193,12 +221,12 @@ it('marks all previous accepted bids as outbid when new bid is placed', function
         'amount' => 100_000,
         'status' => BidStatus::Accepted,
     ]);
-    
+
     $bidB = Bid::factory()->for($lot)->for($userB)->create([
         'amount' => 120_000,
         'status' => BidStatus::Accepted,
     ]);
-    
+
     $bidC = Bid::factory()->for($lot)->for($userC)->create([
         'amount' => 150_000,
         'status' => BidStatus::Accepted,
@@ -214,17 +242,17 @@ it('marks all previous accepted bids as outbid when new bid is placed', function
     $job->handle();
 
     expect($lot->bids()->count())->toBe(4);
-    
+
     $newBid = $lot->bids()->where('user_id', $userD->id)->first();
     expect($newBid->amount)->toBe(200_000);
     expect($newBid->status)->toBe(BidStatus::Accepted);
-    
+
     expect($bidA->fresh()->status)->toBe(BidStatus::Outbid);
     expect($bidB->fresh()->status)->toBe(BidStatus::Outbid);
     expect($bidC->fresh()->status)->toBe(BidStatus::Outbid);
 
     assertDatabaseCount(Bid::class, 4);
-    
+
     Notification::assertNothingSent();
 });
 
@@ -256,16 +284,17 @@ it('allows same user to place multiple sequential bids', function () {
     $secondJob->handle();
 
     expect($lot->bids()->count())->toBe(2);
-    
+
     // Note: The job doesn't outbid same-user bids, only different users
-    expect($firstBid->fresh()->status)->toBe(BidStatus::Accepted);
-    
+    $firstBidStatus = $lot->bids()->whereKey($firstBid->id)->value('status');
+    expect($firstBidStatus)->toBe(BidStatus::Accepted);
+
     $secondBid = $lot->bids()->where('amount', 150_000)->first();
     expect($secondBid->status)->toBe(BidStatus::Accepted);
     expect($secondBid->user_id)->toBe($user->id);
 
     assertDatabaseCount(Bid::class, 2);
-    
+
     Notification::assertNothingSent();
 });
 
@@ -280,7 +309,7 @@ it('does not modify bids already marked as outbid', function () {
     $outbidBid = Bid::factory()->for($lot)->for($userA)->outbid()->create([
         'amount' => 80_000,
     ]);
-    
+
     $acceptedBid = Bid::factory()->for($lot)->for($userB)->create([
         'amount' => 100_000,
         'status' => BidStatus::Accepted,
@@ -296,14 +325,14 @@ it('does not modify bids already marked as outbid', function () {
     $job->handle();
 
     expect($lot->bids()->count())->toBe(3);
-    
+
     expect($outbidBid->fresh()->status)->toBe(BidStatus::Outbid);
     expect($acceptedBid->fresh()->status)->toBe(BidStatus::Outbid);
-    
+
     $newBid = $lot->bids()->where('user_id', $userC->id)->first();
     expect($newBid->status)->toBe(BidStatus::Accepted);
 
     assertDatabaseCount(Bid::class, 3);
-    
+
     Notification::assertNothingSent();
 });

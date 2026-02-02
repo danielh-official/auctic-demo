@@ -5,8 +5,6 @@ namespace Database\Seeders;
 use App\Models\Auction;
 use App\Models\AuctionRegistration;
 use App\Models\Lot;
-use App\Models\PaymentIntent;
-use App\Models\Settlement;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
